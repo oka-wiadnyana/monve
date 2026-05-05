@@ -35,6 +35,8 @@ services:
       dockerfile: Dockerfile
     container_name: monve-cron
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # Loop ini yang menjalankan Laravel Scheduler setiap 60 detik
     entrypoint: ["sh", "-c", "while [ true ]; do php /app/artisan schedule:run; sleep 60; done"]
     env_file:
