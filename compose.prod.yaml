@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: monve-app-1
+    restart: unless-stopped
+
+    # Port 8081 tetap dibuka untuk pengecekan jalur belakang jika diperlukan
+    ports:
+      - "127.0.0.1:8087:80"
+
+    environment:
+      # PENTING: Paksa FrankenPHP jalan di port 80 internal agar tidak redirect ke HTTPS sendiri
+      - SERVER_NAME=:80
+      - APP_RUNTIME=FrankenPHP
+      - HTTPS="on"
+      - TRUSTED_PROXIES="*"
+      # Beritahu Laravel ini adalah lingkungan produksi
+      - APP_ENV=production
+
+    # Membaca sisa konfigurasi (DB, Key, dll) dari file .env
+    env_file:
+      - .env
+
+    volumes:
+      - .:/app
+
+    networks:
+      - apps_network
+
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: monve-cron
+    restart: unless-stopped
+    # Loop ini yang menjalankan Laravel Scheduler setiap 60 detik
+    entrypoint: ["sh", "-c", "while [ true ]; do php /app/artisan schedule:run; sleep 60; done"]
+    env_file:
+      - .env
+    environment:
+      - APP_ENV=production
+      - TZ=Asia/Makassar
+    volumes:
+      - .:/app
+    networks:
+      - apps_network
+
+networks:
+  apps_network:
+    external: true
