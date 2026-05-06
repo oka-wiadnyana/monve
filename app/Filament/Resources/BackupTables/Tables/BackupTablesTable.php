@@ -29,8 +29,29 @@ class BackupTablesTable
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 // Menampilkan info update terakhir (diambil dari tabel tables)
-                TextColumn::make('last_update')
-                    ->label('Sync Terakhir')
+                TextColumn::make('last_update_banding')
+                    ->label('Sync Terakhir Table Banding')
+                    ->state(function ($record) {
+                        // Kita gunakan tabel 'perkara' sebagai benchmark utama database tersebut
+                        return cache()->remember("sync_{$record->SCHEMA_NAME}", 60, function () use ($record) {
+                            $kolomDinamis = ['diinput_tanggal', 'tgl_st_asli', 'diperbaharui_tanggal'];
+
+                            foreach ($kolomDinamis as $kolom) {
+                                try {
+                                    $date = DB::connection('mysql_backup')
+                                        ->table($record->SCHEMA_NAME . '.perkara_banding')
+                                        ->max($kolom);
+
+                                    if ($date) return $date;
+                                } catch (\Exception $e) {
+                                    continue;
+                                }
+                            }
+                            return null;
+                        });
+                    }),
+                TextColumn::make('last_update_perkara')
+                    ->label('Sync Terakhir Perkara')
                     ->state(function ($record) {
                         // Kita gunakan tabel 'perkara' sebagai benchmark utama database tersebut
                         return cache()->remember("sync_{$record->SCHEMA_NAME}", 60, function () use ($record) {
