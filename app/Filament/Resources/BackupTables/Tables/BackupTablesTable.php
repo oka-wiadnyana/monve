@@ -49,7 +49,13 @@ class BackupTablesTable
                             }
                             return null;
                         });
-                    }),
+                    })
+                    ->dateTime()
+                    ->sortable()
+                    ->color(
+                        fn($state) =>
+                        $state && \Carbon\Carbon::parse($state)->isToday() ? 'success' : 'danger'
+                    ),
                 TextColumn::make('last_update_perkara')
                     ->label('Sync Terakhir Perkara')
                     ->state(function ($record) {
