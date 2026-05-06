@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: monve-app-1
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
     # Port 8081 tetap dibuka untuk pengecekan jalur belakang jika diperlukan
     ports:
