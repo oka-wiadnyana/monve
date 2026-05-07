@@ -33,7 +33,7 @@ class BackupTablesTable
                     ->label('Sync Terakhir Table Banding')
                     ->state(function ($record) {
                         // Kita gunakan tabel 'perkara' sebagai benchmark utama database tersebut
-                        return cache()->remember("sync_{$record->SCHEMA_NAME}", 60, function () use ($record) {
+                        return cache()->remember("sync_{$record->SCHEMA_NAME}_banding", 60, function () use ($record) {
                             $kolomDinamis = ['diinput_tanggal', 'tgl_st_asli', 'diperbaharui_tanggal'];
 
                             foreach ($kolomDinamis as $kolom) {
