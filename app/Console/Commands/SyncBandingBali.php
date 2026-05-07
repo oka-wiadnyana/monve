@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class SyncBandingBali extends Command
@@ -83,10 +84,27 @@ class SyncBandingBali extends Command
 
                 $bar->finish();
                 $this->info("\nSukses sinkron {$pn['nama']}.");
+
+                Http::timeout(5)
+                    ->post("https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage", [
+                        'chat_id' => env('TELEGRAM_CHAT_ID'),
+                        'text'    => "*Laravel Cron Success*\n\n" .
+                            "*Message:* " . $pn['nama'] . " sukses disinkron \n",
+
+
+                    ]);
             } catch (\Exception $e) {
                 $errorMessage = "Sync Error {$pn['nama']}: " . $e->getMessage();
                 $this->error("\n" . $errorMessage);
                 Log::error($errorMessage, ['exception' => $e]);
+                Http::timeout(5)
+                    ->post("https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage", [
+                        'chat_id' => env('TELEGRAM_CHAT_ID'),
+                        'text'    => "❌ *Laravel Cron Error*\n\n" .
+                            "*Message:* " . $pn['nama'] . " gagal disinkron \n" .
+                            "*Error:* " . $e->getMessage(),
+
+                    ]);
             }
         }
 
