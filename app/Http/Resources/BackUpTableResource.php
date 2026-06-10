@@ -21,19 +21,24 @@ class BackUpTableResource extends JsonResource
                     $date = \Illuminate\Support\Facades\DB::connection('mysql_backup')
                         ->table($this->SCHEMA_NAME . '.perkara')
                         ->max($kolom);
-                    if ($date) return $date;
+                    $dateBanding = \Illuminate\Support\Facades\DB::connection('mysql_backup')->table($this->SCHEMA_NAME . '.perkara_banding')
+                        ->max($kolom);
+
+
+                    if ($date) return ['date_perkara' => $date, 'date_perkara_banding' => $dateBanding,];
                 } catch (\Exception $e) {
                     continue;
                 }
             }
-            return null;
+            return ['date_perkara' => null, 'date_perkara_banding' => null];
         });
+        // dd($lastUpdate['date_perkara']);
 
         return [
             'database_name' => $this->SCHEMA_NAME,
             'collation'     => $this->DEFAULT_COLLATION_NAME,
             'last_sync'     => $lastUpdate,
-            'is_active'     => $lastUpdate ? \Illuminate\Support\Carbon::parse($lastUpdate)->isToday() : false,
+            'is_active'     => $lastUpdate['date_perkara'] != null ? \Illuminate\Support\Carbon::parse($lastUpdate['date_perkara'])->isToday() : false,
             // Opsional: Jika ingin menyertakan detail tabel di dalamnya
             'details_count' => $this->whenLoaded('tables', function () {
                 return $this->tables->count();
