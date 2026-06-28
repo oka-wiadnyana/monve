@@ -15,8 +15,10 @@ class BackUpTableResource extends JsonResource
     public function toArray(Request $request): array
     {
         $lastUpdate = cache()->remember("sync_{$this->SCHEMA_NAME}", 60, function () {
-            $kolomDinamis = ['diinput_tanggal', 'tgl_st_asli'];
+            $kolomDinamis = ['diinput_tanggal', 'tgl_st_asli', 'tanggal_permohonan', 'tanggal_pendaftaran'];
+
             foreach ($kolomDinamis as $kolom) {
+
                 try {
                     $date = \Illuminate\Support\Facades\DB::connection('mysql_backup')
                         ->table($this->SCHEMA_NAME . '.perkara')
@@ -26,9 +28,9 @@ class BackUpTableResource extends JsonResource
                     $dateEksekusi = \Illuminate\Support\Facades\DB::connection('mysql_backup')->table($this->SCHEMA_NAME . '.perkara_eksekusi')
                         ->max($kolom);
                     $dateEcourt = \Illuminate\Support\Facades\DB::connection('mysql_backup')->table($this->SCHEMA_NAME . '.ecourt_banding')
-                        ->max($kolom);
+                        ->max('tanggal_permohonan_banding');
                     $dateEberpadu = \Illuminate\Support\Facades\DB::connection('mysql_backup')->table($this->SCHEMA_NAME . '.berpadu_pelimpahan_register')
-                        ->max($kolom);
+                        ->max('tanggal_pendaftaran');
 
 
                     if ($date) return ['date_perkara' => $date, 'date_perkara_banding' => $dateBanding, 'date_perkara_eksekusi' => $dateEksekusi, 'date_ecourt' => $dateEcourt, 'date_eberpadu' => $dateEberpadu];
