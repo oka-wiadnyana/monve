@@ -46,10 +46,10 @@ class SyncBandingBali extends Command
                     ->leftJoin('berpadu_pelimpahan_register', 'perkara_banding.nomor_perkara_pn', '=', 'berpadu_pelimpahan_register.nomor_perkara')
 
                     ->when(!$this->option('init'), function ($query) {
-                        // Jika BUKAN init (rutin harian), ambil yang diupdate 7 hari terakhir 
+                        // Jika BUKAN init (rutin harian), ambil yang diupdate dari awal tahun 
                         // ATAU yang putusan PT-nya masih kosong (perkara masih jalan)
                         return $query->where(function ($q) {
-                            $q->where('diperbaharui_tanggal', '>=', now()->subDays(7))
+                            $q->where('diperbaharui_tanggal', '>=', now()->startOfYear())
                                 ->orWhereNull('putusan_banding');
                         });
                     })

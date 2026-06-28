@@ -23,9 +23,15 @@ class BackUpTableResource extends JsonResource
                         ->max($kolom);
                     $dateBanding = \Illuminate\Support\Facades\DB::connection('mysql_backup')->table($this->SCHEMA_NAME . '.perkara_banding')
                         ->max($kolom);
+                    $dateEksekusi = \Illuminate\Support\Facades\DB::connection('mysql_backup')->table($this->SCHEMA_NAME . '.perkara_eksekusi')
+                        ->max($kolom);
+                    $dateEcourt = \Illuminate\Support\Facades\DB::connection('mysql_backup')->table($this->SCHEMA_NAME . '.ecourt_banding')
+                        ->max($kolom);
+                    $dateEberpadu = \Illuminate\Support\Facades\DB::connection('mysql_backup')->table($this->SCHEMA_NAME . '.berpadu_pelimpahan_register')
+                        ->max($kolom);
 
 
-                    if ($date) return ['date_perkara' => $date, 'date_perkara_banding' => $dateBanding,];
+                    if ($date) return ['date_perkara' => $date, 'date_perkara_banding' => $dateBanding, 'date_perkara_eksekusi' => $dateEksekusi, 'date_ecourt' => $dateEcourt, 'date_eberpadu' => $dateEberpadu];
                 } catch (\Exception $e) {
                     continue;
                 }
