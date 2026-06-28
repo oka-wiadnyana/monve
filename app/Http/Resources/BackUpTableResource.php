@@ -36,7 +36,7 @@ class BackUpTableResource extends JsonResource
                     continue;
                 }
             }
-            return ['date_perkara' => null, 'date_perkara_banding' => null];
+            return ['date_perkara' => null, 'date_perkara_banding' => null, 'date_perkara_eksekusi' => null, 'date_ecourt' => null, 'date_eberpadu' => null];
         });
         // dd($lastUpdate['date_perkara']);
 
